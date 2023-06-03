@@ -1,0 +1,1 @@
+- Add icon support to iOS (https://github.com/oblador/react-native-vector-icons#ios)
