@@ -3,12 +3,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
-  TextInput,
 } from 'react-native';
 import Counter from './Counter';
+import { Divider, FAB, Text, TextInput } from 'react-native-paper';
 
 function App(): JSX.Element {
   const [counters, setCounters] = useState([
@@ -23,50 +22,51 @@ function App(): JSX.Element {
   };
 
   const removeCounter = (id: number) => () => {
-    setCounters((v) => v.filter((c) => c.id !== id));
+    setCounters((v) =>
+      v.filter((c) => c.id !== id).map((c, i) => ({ ...c, id: i }))
+    );
   };
 
   const toggleEdit = (id: number) => () => {
     setCounters((v) =>
-      v.map((c) => (c.id === id ? { ...c, editing: true } : c))
+      v.map((c) => (c.id === id ? { ...c, editing: !c.editing } : c))
     );
   };
 
   const editTitle = (id: number, title: string) => {
-    setCounters((v) =>
-      v.map((c) => (c.id === id ? { ...c, editing: false, title } : c))
-    );
+    setCounters((v) => v.map((c) => (c.id === id ? { ...c, title } : c)));
+  };
+
+  const changeTitle = (id: number) => (title: string) => {
+    const last = title.slice(-1);
+    if (last !== '\n') {
+      return editTitle(id, title);
+    }
+    editTitle(id, title.slice(0, -1));
+    toggleEdit(id)();
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.screen}>
+      <FAB label="+" style={styles.fab} onPress={addCounter} />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.container}>
-          <TouchableOpacity style={styles.box} onPress={addCounter}>
-            <Text style={[styles.buttonText]}>Add Counter</Text>
-          </TouchableOpacity>
-        </View>
         {counters.map((c) => (
           <View key={c.id}>
             {c.editing ? (
+              <TextInput
+                autoFocus={true}
+                style={styles.counterTitle}
+                value={c.title}
+                onChangeText={changeTitle(c.id)}
+                onBlur={toggleEdit(c.id)}
+              />
+            ) : (
               <TouchableOpacity onPress={toggleEdit(c.id)}>
                 <Text style={styles.counterTitle}>{c.title}</Text>
               </TouchableOpacity>
-            ) : (
-              <TextInput
-                style={styles.counterTitle}
-                value={c.title}
-                onChangeText={(title) => {
-                  const last = title.slice(-1);
-                  if (last !== '\n') {
-                    return editTitle(c.id, title);
-                  }
-                  editTitle(c.id, title.slice(0, -1));
-                  toggleEdit(c.id)();
-                }}
-              />
             )}
             <Counter deleteHandler={removeCounter(c.id)} />
+            <Divider />
           </View>
         ))}
       </ScrollView>
@@ -76,9 +76,14 @@ function App(): JSX.Element {
 
 const PART = 100 / 2;
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: '#fff',
+    height: '100%',
+    margin: 10,
+  },
+  container: {
+    flex: 1,
     flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -92,6 +97,15 @@ const styles = StyleSheet.create({
   },
   counterTitle: {
     fontSize: 24,
+  },
+
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    zIndex: 100, // works on ios
+    elevation: 100, // works on android
   },
 });
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Text, IconButton } from 'react-native-paper';
 
 interface Props {
   deleteHandler: () => void;
@@ -10,23 +11,21 @@ export default function Counter({ deleteHandler, ...props }: Props) {
   const [count, setCount] = useState(0);
   return (
     <View style={styles.container} {...props}>
-      <TouchableOpacity
+      <IconButton
         style={styles.box}
         onPress={() => setCount((v) => v - 1)}
         disabled={count == 0}
-      >
-        <Text style={[styles.buttonText]}> - </Text>
-      </TouchableOpacity>
+        icon="minus"
+        mode="contained"
+      />
       <Text style={[styles.buttonText]}>{count}</Text>
-      <TouchableOpacity
-        style={styles.box}
+      <IconButton
+        style={[styles.box]}
         onPress={() => setCount((v) => v + 1)}
-      >
-        <Text style={[styles.buttonText]}> + </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.box} onPress={deleteHandler}>
-        <Text style={[styles.buttonText]}>🗑️</Text>
-      </TouchableOpacity>
+        icon="plus"
+        mode="contained"
+      />
+      <IconButton icon="delete" style={styles.box} onPress={deleteHandler} />
     </View>
   );
 }
@@ -44,7 +43,6 @@ const styles = StyleSheet.create({
     width: `${PART}%`,
   },
   buttonText: {
-    textAlign: 'center',
     fontSize: 32,
   },
 });
