@@ -9,7 +9,7 @@ import {
 import Counter from './Counter';
 import { Divider, FAB, Text, TextInput } from 'react-native-paper';
 
-function App(): JSX.Element {
+function CounterScreen(): JSX.Element {
   const [counters, setCounters] = useState([
     { title: 'Counter', id: 1, editing: false },
   ]);
@@ -47,11 +47,14 @@ function App(): JSX.Element {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <FAB label="+" style={styles.fab} onPress={addCounter} />
+    <>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         {counters.map((c) => (
-          <View key={c.id}>
+          <View
+            key={c.id}
+            style={styles.counterContainer}
+            testID={`Counter__${c.id}_view`}
+          >
             {c.editing ? (
               <TextInput
                 autoFocus={true}
@@ -59,18 +62,26 @@ function App(): JSX.Element {
                 value={c.title}
                 onChangeText={changeTitle(c.id)}
                 onBlur={toggleEdit(c.id)}
+                testID={`Counter__${c.id}_titleInput`}
               />
             ) : (
-              <TouchableOpacity onPress={toggleEdit(c.id)}>
+              <TouchableOpacity
+                onPress={toggleEdit(c.id)}
+                testID={`Counter__${c.id}_title`}
+              >
                 <Text style={styles.counterTitle}>{c.title}</Text>
               </TouchableOpacity>
             )}
-            <Counter deleteHandler={removeCounter(c.id)} />
+            <Counter
+              deleteHandler={removeCounter(c.id)}
+              testID={`Counter__${c.id}`}
+            />
             <Divider />
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+      <FAB label="+" style={styles.fab} onPress={addCounter} testID="FAB" />
+    </>
   );
 }
 
@@ -88,6 +99,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  counterContainer: {
+    padding: 5,
+  },
   box: {
     width: `${PART}%`,
   },
@@ -104,9 +118,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-    zIndex: 100, // works on ios
-    elevation: 100, // works on android
   },
 });
 
-export default App;
+export default CounterScreen;
