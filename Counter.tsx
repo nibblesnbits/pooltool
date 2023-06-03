@@ -1,26 +1,37 @@
 import React from 'react';
 import { useState } from 'react';
-import { Pressable } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
-interface Props {}
+interface Props {
+  deleteHandler: () => void;
+}
 
-export default function Counter(props: Props) {
+export default function Counter({ deleteHandler, ...props }: Props) {
   const [count, setCount] = useState(0);
   return (
     <View style={styles.container} {...props}>
-      <Pressable style={styles.box} onPress={() => setCount((v) => v - 1 || 1)}>
+      <TouchableOpacity
+        style={styles.box}
+        onPress={() => setCount((v) => v - 1)}
+        disabled={count == 0}
+      >
         <Text style={[styles.buttonText]}> - </Text>
-      </Pressable>
+      </TouchableOpacity>
       <Text style={[styles.buttonText]}>{count}</Text>
-      <Pressable style={styles.box} onPress={() => setCount((v) => v + 1)}>
+      <TouchableOpacity
+        style={styles.box}
+        onPress={() => setCount((v) => v + 1)}
+      >
         <Text style={[styles.buttonText]}> + </Text>
-      </Pressable>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.box} onPress={deleteHandler}>
+        <Text style={[styles.buttonText]}>🗑️</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
-const PART = 100 / 3;
+const PART = 100 / 4;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
